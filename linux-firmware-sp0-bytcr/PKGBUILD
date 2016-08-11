@@ -1,7 +1,8 @@
 # $Id: PKGBUILD 272971 2016-08-03 15:52:58Z lcarlier $
 # Maintainer: Thomas Bächler <thomas@archlinux.org>
 
-pkgname=linux-firmware
+pkgname=linux-firmware-bytcr
+_pkgbase=linux-firmware
 # Commit date + git rev-parse --short origin/master
 _rev=6bc2c60
 pkgver=20160730.${_rev}
@@ -12,6 +13,7 @@ arch=('any')
 url="http://git.kernel.org/?p=linux/kernel/git/firmware/linux-firmware.git;a=summary"
 license=('GPL2' 'GPL3' 'custom')
 conflicts=('linux-firmware-git'
+           'linux-firmware'
            'kernel26-firmware'
            'ar9170-fw'
            'iwlwifi-1000-ucode'
@@ -35,7 +37,9 @@ replaces=('kernel26-firmware'
           'rt2870usb-fw'
           'rt2x00-rt61-fw'
           'rt2x00-rt71w-fw'
-          'amd-ucode')
+          'amd-ucode'
+          'linux-firmware')
+provides=("$_pkgbase")
 options=(!strip)
 source=("git+https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git#commit=${_rev}"
        'fw_sst_0f28_ssp0.bin')
@@ -43,20 +47,20 @@ md5sums=('SKIP'
         '073bb387eb96f8c01d039778086484ac')
 
 package() {
-  cd "${srcdir}/${pkgname}"
+  cd "${srcdir}/${_pkgbase}"
 
   make DESTDIR="${pkgdir}" FIRMWAREDIR=/usr/lib/firmware install
   rm "${pkgdir}/usr/lib/firmware/"{Makefile,README,configure,GPL-3}
 
-  install -d "${pkgdir}/usr/share/licenses/${pkgname}"
+  install -d "${pkgdir}/usr/share/licenses/${_pkgbase}"
   install -Dm644 LICEN* WHENCE "${pkgdir}/usr/share/licenses/linux-firmware/"
 
   # Trigger a microcode reload for configurations not using early updates
   install -d "${pkgdir}/usr/lib/tmpfiles.d"
   echo 'w /sys/devices/system/cpu/microcode/reload - - - - 1' \
-    >"${pkgdir}/usr/lib/tmpfiles.d/${pkgname}.conf"
+    >"${pkgdir}/usr/lib/tmpfiles.d/${_pkgbase}.conf"
   rm -rf "${pkgdir}/usr/lib/firmware/intel/fw_sst*"
-  mv "${srcdir}/fw_sst_0f28_ssp0.bin" "${pkgdir}/usr/lib/firmware/intel/fw_sst_0f28.bin"
+  cp "${srcdir}/fw_sst_0f28_ssp0.bin" "${pkgdir}/usr/lib/firmware/intel/fw_sst_0f28.bin"
   chown root:root "${pkgdir}/usr/lib/firmware/intel/fw_sst_0f28.bin"
   chmod 644 "${pkgdir}/usr/lib/firmware/intel/fw_sst_0f28.bin"
 }
