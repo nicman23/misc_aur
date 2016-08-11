@@ -1,6 +1,6 @@
-diff -uNr linux-4.7/sound/soc/intel/atom/sst/sst_acpi.c src/linux-4.7/sound/soc/intel/atom/sst/sst_acpi.c
---- linux-4.7/sound/soc/intel/atom/sst/sst_acpi.c	2016-07-24 22:23:50.000000000 +0300
-+++ src/linux-4.7/sound/soc/intel/atom/sst/sst_acpi.c	2016-08-11 12:27:27.483788027 +0300
+diff -uwr ./linux-4.6.3.new/sound/soc/intel/atom/sst/sst_acpi.c ./linux-4.6.3.orig/sound/soc/intel/atom/sst/sst_acpi.c
+--- ./linux-4.6.3.new/sound/soc/intel/atom/sst/sst_acpi.c	2016-06-24 17:22:27.000000000 +0000
++++ ./linux-4.6.3.orig/sound/soc/intel/atom/sst/sst_acpi.c	2016-07-04 22:53:45.094904207 +0000
 @@ -38,6 +38,8 @@
  #include <acpi/platform/aclinux.h>
  #include <acpi/actypes.h>
@@ -179,9 +179,18 @@ diff -uNr linux-4.7/sound/soc/intel/atom/sst/sst_acpi.c src/linux-4.7/sound/soc/
  						&chv_platform_data },
  
  	{},
-diff -uNr linux-4.7/sound/soc/intel/atom/sst-atom-controls.c src/linux-4.7/sound/soc/intel/atom/sst-atom-controls.c
---- linux-4.7/sound/soc/intel/atom/sst-atom-controls.c	2016-07-24 22:23:50.000000000 +0300
-+++ src/linux-4.7/sound/soc/intel/atom/sst-atom-controls.c	2016-08-11 12:27:29.433973624 +0300
+diff -uwr ./linux-4.6.3.new/sound/soc/intel/atom/sst-atom-controls.c ./linux-4.6.3.orig/sound/soc/intel/atom/sst-atom-controls.c
+--- ./linux-4.6.3.new/sound/soc/intel/atom/sst-atom-controls.c	2016-06-24 17:22:27.000000000 +0000
++++ ./linux-4.6.3.orig/sound/soc/intel/atom/sst-atom-controls.c	2016-07-04 22:53:45.102900207 +0000
+@@ -195,7 +195,7 @@
+ 
+ 	if (e->w && e->w->power)
+ 		ret = sst_send_slot_map(drv);
+-	else
++	else if (!e->w)
+ 		dev_err(&drv->pdev->dev, "Slot control: %s doesn't have DAPM widget!!!\n",
+ 				kcontrol->id.name);
+ 	return ret;
 @@ -534,6 +534,7 @@
  
  /* Look up table to convert MIXER SW bit regs to SWM inputs */
@@ -285,9 +294,9 @@ diff -uNr linux-4.7/sound/soc/intel/atom/sst-atom-controls.c src/linux-4.7/sound
  };
  
  #define SST_GAIN_NUM_CONTROLS 3
-diff -uNr linux-4.7/sound/soc/intel/atom/sst-atom-controls.h src/linux-4.7/sound/soc/intel/atom/sst-atom-controls.h
---- linux-4.7/sound/soc/intel/atom/sst-atom-controls.h	2016-07-24 22:23:50.000000000 +0300
-+++ src/linux-4.7/sound/soc/intel/atom/sst-atom-controls.h	2016-08-11 12:27:29.437307272 +0300
+diff -uwr ./linux-4.6.3.new/sound/soc/intel/atom/sst-atom-controls.h ./linux-4.6.3.orig/sound/soc/intel/atom/sst-atom-controls.h
+--- ./linux-4.6.3.new/sound/soc/intel/atom/sst-atom-controls.h	2016-06-24 17:22:27.000000000 +0000
++++ ./linux-4.6.3.orig/sound/soc/intel/atom/sst-atom-controls.h	2016-07-04 22:53:45.102900207 +0000
 @@ -35,6 +35,8 @@
  /* define a bit for each mixer input */
  #define SST_MIX_IP(x)		(x)
@@ -329,9 +338,9 @@ diff -uNr linux-4.7/sound/soc/intel/atom/sst-atom-controls.h src/linux-4.7/sound
  	SST_SWM_OUT_CODEC0	= (SST_PATH_INDEX_CODEC_OUT0	  | SST_DEFAULT_CELL_NBR),
  	SST_SWM_OUT_CODEC1	= (SST_PATH_INDEX_CODEC_OUT1	  | SST_DEFAULT_CELL_NBR),
  	SST_SWM_OUT_SPROT_LOOP	= (SST_PATH_INDEX_SPROT_LOOP_OUT  | SST_DEFAULT_CELL_NBR),
-diff -uNr linux-4.7/sound/soc/intel/boards/bytcr_rt5640.c src/linux-4.7/sound/soc/intel/boards/bytcr_rt5640.c
---- linux-4.7/sound/soc/intel/boards/bytcr_rt5640.c	2016-07-24 22:23:50.000000000 +0300
-+++ src/linux-4.7/sound/soc/intel/boards/bytcr_rt5640.c	2016-08-11 12:38:29.761188108 +0300
+diff -uwr ./linux-4.6.3.new/sound/soc/intel/boards/bytcr_rt5640.c ./linux-4.6.3.orig/sound/soc/intel/boards/bytcr_rt5640.c
+--- ./linux-4.6.3.new/sound/soc/intel/boards/bytcr_rt5640.c	2016-06-24 17:22:27.000000000 +0000
++++ ./linux-4.6.3.orig/sound/soc/intel/boards/bytcr_rt5640.c	2016-07-08 05:13:52.513645898 +0000
 @@ -24,6 +24,8 @@
  #include <linux/device.h>
  #include <linux/dmi.h>
@@ -626,13 +635,11 @@ diff -uNr linux-4.7/sound/soc/intel/boards/bytcr_rt5640.c src/linux-4.7/sound/so
  	return 0;
  }
  
-@@ -304,11 +452,11 @@
- 		/* back ends */
+@@ -305,10 +453,10 @@
  	{
  		.name = "SSP2-Codec",
--		.id = 1,
+ 		.be_id = 1,
 -		.cpu_dai_name = "ssp2-port",
-+		.be_id = 1,
 +		.cpu_dai_name = "ssp2-port", /* overwritten for ssp0 routing */
  		.platform_name = "sst-mfld-platform",
  		.no_pcm = 1,
@@ -709,9 +716,9 @@ diff -uNr linux-4.7/sound/soc/intel/boards/bytcr_rt5640.c src/linux-4.7/sound/so
  	ret_val = devm_snd_soc_register_card(&pdev->dev, &byt_rt5640_card);
  
  	if (ret_val) {
-diff -uNr linux-4.7/sound/soc/intel/common/sst-acpi.c src/linux-4.7/sound/soc/intel/common/sst-acpi.c
---- linux-4.7/sound/soc/intel/common/sst-acpi.c	2016-07-24 22:23:50.000000000 +0300
-+++ src/linux-4.7/sound/soc/intel/common/sst-acpi.c	2016-08-11 12:27:29.437307272 +0300
+diff -uwr ./linux-4.6.3.new/sound/soc/intel/common/sst-acpi.c ./linux-4.6.3.orig/sound/soc/intel/common/sst-acpi.c
+--- ./linux-4.6.3.new/sound/soc/intel/common/sst-acpi.c	2016-06-24 17:22:27.000000000 +0000
++++ ./linux-4.6.3.orig/sound/soc/intel/common/sst-acpi.c	2016-07-05 08:53:04.293534945 +0000
 @@ -228,7 +228,8 @@
  	.resindex_lpe_base = 0,
  	.resindex_pcicfg_base = 1,

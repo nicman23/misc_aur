@@ -1,39 +1,45 @@
-#
-# Maintainer: Mikael Eriksson <mikael_eriksson@miffe.org>
-#
-# Based on the linux package by:
-# Maintainer: Tobias Powalowski <tpowa@archlinux.org>
-# Maintainer: Thomas Baechler <thomas@archlinux.org>
+# $Id: PKGBUILD 273031 2016-08-04 15:38:48Z heftig $
+# Maintainer: Jan Alexander Steffens (heftig) <jan.steffens@gmail.com>
+# Contributor: Tobias Powalowski <tpowa@archlinux.org>
+# Contributor: Thomas Baechler <thomas@archlinux.org>
 
-#pkgbase=linux-mainline               # Build stock -ARCH kernel
+#pkgbase=linux-zen           # Build -zen kernel
 pkgbase=linux-sp0-bytcr       # Build kernel with a different name
-_srcname=linux-4.7
-_patchname=
-pkgver=4.7
+_srcname=linux-4.6
+_zenpatch=zen-4.6.5-67fab60d3c994def0f3a75d73a5ad938695b9d75.diff
+pkgver=4.6.5
 pkgrel=1
 arch=('i686' 'x86_64')
-url="http://www.kernel.org/"
+url="https://github.com/zen-kernel/zen-kernel"
 license=('GPL2')
-makedepends=('xmlto' 'docbook-xsl' 'kmod' 'inetutils' 'bc' 'elfutils')
+makedepends=('xmlto' 'docbook-xsl' 'kmod' 'inetutils' 'bc' 'libelf')
 options=('!strip')
-source=("https://cdn.kernel.org/pub/linux/kernel/v4.x/${_srcname}.tar.xz"
-        #"https://www.kernel.org/pub/linux/kernel/v4.x/${_srcname}.tar.sign"
-        #"https://www.kernel.org/pub/linux/kernel/v4.x/testing/${_patchname}.sign"
+source=("https://www.kernel.org/pub/linux/kernel/v4.x/${_srcname}.tar.xz"
+        "https://www.kernel.org/pub/linux/kernel/v4.x/${_srcname}.tar.sign"
+        "https://www.kernel.org/pub/linux/kernel/v4.x/patch-${pkgver}.xz"
+        "https://www.kernel.org/pub/linux/kernel/v4.x/patch-${pkgver}.sign"
+        "http://pkgbuild.com/~heftig/zen-patches/${_zenpatch}.xz"
+        "http://pkgbuild.com/~heftig/zen-patches/${_zenpatch}.sign"
         # the main kernel config files
         'config' 'config.x86_64'
         # standard config files for mkinitcpio ramdisk
         'linux.preset'
         'change-default-console-loglevel.patch'
         '0018-rt5640_audio_on_intel_baytrail.patch')
-sha256sums=('5190c3d1209aeda04168145bf50569dc0984f80467159b1dc50ad731e3285f10'
-            '95ea7cf82357216490470f4991b51f262e25cf0d331a27853ace397b2811efac'
-            '9eb2cac33c039e3ee5791457db374a797e6d40acb7a37c6ef921be921c2c2b4c'
+sha256sums=('a93771cd5a8ad27798f22e9240538dfea48d3a2bf2a6a6ab415de3f02d25d866'
+            'SKIP'
+            '857df33f085a0116b9d2322ffe3b23d5b7d8c4898427d79f68108a653e84910c'
+            'SKIP'
+            'eece6f5aed091972be5e33a4bc9ab1f0f7d345b0ee18cba11fdbb14c1b915d48'
+            'SKIP'
+            '1cced95778d343cc630debf307ae2939bc6d8b57b57f50cc5e691957dfca251b'
+            'e4a34885e046ae6b786296dad560757a41ffeca67832b2d16768a99a0136d685'
             'f0d90e756f14533ee67afda280500511a62465b4f76adcc5effa95a40045179c'
-            '1256b241cd477b265a3c2d64bdc19ffe3c9bbcee82ea3994c590c2c76e767d99'
-            '210d1e7950ff5b3a50620bb126e4ef65be212da31a640586b2eb50e4ea0ee70e')
+            '1256b241cd477b265a3c2d64bdc19ffe3c9bbcee82ea3994c590c2c76e767d99')
 validpgpkeys=(
               'ABAF11C65A2970B130ABE3C479BE3E4300411886' # Linus Torvalds
               '647F28654894E3BD457199BE38DBBDC86092693E' # Greg Kroah-Hartman
+              '8218F88849AAC522E94CF470A5E9288C4FA415FA' # Jan Alexander Steffens (heftig)
              )
 
 _kernelname=${pkgbase#linux}
@@ -41,8 +47,14 @@ _kernelname=${pkgbase#linux}
 prepare() {
   cd "${srcdir}/${_srcname}"
 
+  # add upstream patch
+  patch -p1 -i "${srcdir}/patch-${pkgver}"
+
   # add latest fixes from stable queue, if needed
   # http://git.kernel.org/?p=linux/kernel/git/stable/stable-queue.git
+
+  # add zen patch
+  patch -p1 -i "${srcdir}/${_zenpatch}"
 
   # set DEFAULT_CONSOLE_LOGLEVEL to 4 (same value as the 'quiet' kernel param)
   # remove this when a Kconfig knob is made available by upstream
@@ -61,18 +73,20 @@ prepare() {
   fi
 
   # set extraversion to pkgrel
-  #sed -ri "s|^(EXTRAVERSION =).*|\1 -${pkgrel}|" Makefile
+  sed -ri "s|^(EXTRAVERSION =).*|\1 -${pkgrel}|" Makefile
 
   # don't run depmod on 'make install'. We'll do this ourselves in packaging
   sed -i '2iexit 0' scripts/depmod.sh
 
   # sound patches for baytrail
-  patch -p1 -i "${srcdir}/0018-rt5640_audio_on_intel_baytrail.patch"
+  patch -p2 -i "${srcdir}/0018-rt5640_audio_on_intel_baytrail.patch"
 
   # custom patch for YOUR platform
   if [ -e "${srcdir}/../custom_entry.patch" ] ; then
     patch -p1 -i "${srcdir}/../custom_entry.patch" ; fi
 
+  # get kernel version
+  #make prepare
 
   # load configuration
   # Configure the kernel. Replace the line below with one of your choice.
@@ -80,11 +94,7 @@ prepare() {
   make nconfig # new CLI menu for configuration
   #make xconfig # X-based configuration
   #make oldconfig # using old config from previous kernel version
-  #make olddefconfig
   # ... or manually edit .config
-
-  # get kernel version
-  make prepare
 
   # rewrite configuration
   yes "" | make config >/dev/null
