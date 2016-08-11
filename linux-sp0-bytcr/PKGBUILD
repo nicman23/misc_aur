@@ -32,10 +32,12 @@ sha256sums=('a93771cd5a8ad27798f22e9240538dfea48d3a2bf2a6a6ab415de3f02d25d866'
             'SKIP'
             'eece6f5aed091972be5e33a4bc9ab1f0f7d345b0ee18cba11fdbb14c1b915d48'
             'SKIP'
-            '1cced95778d343cc630debf307ae2939bc6d8b57b57f50cc5e691957dfca251b'
-            'e4a34885e046ae6b786296dad560757a41ffeca67832b2d16768a99a0136d685'
+            '27b5309bf3be704006f34f1d4b427583fc3553a570910ed73ffaa1c8a576876f'
+            '8e6a71ec6ef5b330f2eee17ba400a5dba368043480f641c71f49ef148a59f0d1'
             'f0d90e756f14533ee67afda280500511a62465b4f76adcc5effa95a40045179c'
-            '1256b241cd477b265a3c2d64bdc19ffe3c9bbcee82ea3994c590c2c76e767d99')
+            '1256b241cd477b265a3c2d64bdc19ffe3c9bbcee82ea3994c590c2c76e767d99'
+            '56cefe74387d1660142ad8c0fee52351dd777eba58eb7b6139da6e423691328e')
+
 validpgpkeys=(
               'ABAF11C65A2970B130ABE3C479BE3E4300411886' # Linus Torvalds
               '647F28654894E3BD457199BE38DBBDC86092693E' # Greg Kroah-Hartman
