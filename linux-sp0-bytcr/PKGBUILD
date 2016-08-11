@@ -26,8 +26,8 @@ source=("https://cdn.kernel.org/pub/linux/kernel/v4.x/${_srcname}.tar.xz"
         'change-default-console-loglevel.patch'
         '0018-rt5640_audio_on_intel_baytrail.patch')
 sha256sums=('5190c3d1209aeda04168145bf50569dc0984f80467159b1dc50ad731e3285f10'
-            '50a4b78c85d932ca7ec8a0b19501320c70662ea5b2fe15c36a6f1912fd480a3c'
-            '4f0b87d58ab87edf1ebc582ed00b44902c5c3074e2811a4f6b31f81b30180b5b'
+            '95ea7cf82357216490470f4991b51f262e25cf0d331a27853ace397b2811efac'
+            '9eb2cac33c039e3ee5791457db374a797e6d40acb7a37c6ef921be921c2c2b4c'
             'f0d90e756f14533ee67afda280500511a62465b4f76adcc5effa95a40045179c'
             '1256b241cd477b265a3c2d64bdc19ffe3c9bbcee82ea3994c590c2c76e767d99'
             'SKIP')
