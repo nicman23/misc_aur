@@ -37,8 +37,10 @@ replaces=('kernel26-firmware'
           'rt2x00-rt71w-fw'
           'amd-ucode')
 options=(!strip)
-source=("git+https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git#commit=${_rev}")
-md5sums=('SKIP')
+source=("git+https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git#commit=${_rev}"
+       'fw_sst_0f28_ssp0.bin')
+md5sums=('SKIP'
+        '073bb387eb96f8c01d039778086484ac')
 
 package() {
   cd "${srcdir}/${pkgname}"
@@ -53,9 +55,9 @@ package() {
   install -d "${pkgdir}/usr/lib/tmpfiles.d"
   echo 'w /sys/devices/system/cpu/microcode/reload - - - - 1' \
     >"${pkgdir}/usr/lib/tmpfiles.d/${pkgname}.conf"
-  rm -rf "${pkgdir}/lib/firmware/intel/fw_sst*"
-  mv "${srcdir}/fw_sst_0f28_ssp0.bin" "${pkgdir}/lib/firmware/intel/fw_sst_0f28.bin"
-  chown root:root "${pkgdir}/lib/firmware/intel/fw_sst_0f28.bin"
-  chmod 644 "${pkgdir}/lib/firmware/intel/fw_sst_0f28.bin"
+  rm -rf "${pkgdir}/usr/lib/firmware/intel/fw_sst*"
+  mv "${srcdir}/fw_sst_0f28_ssp0.bin" "${pkgdir}/usr/lib/firmware/intel/fw_sst_0f28.bin"
+  chown root:root "${pkgdir}/usr/lib/firmware/intel/fw_sst_0f28.bin"
+  chmod 644 "${pkgdir}/usr/lib/firmware/intel/fw_sst_0f28.bin"
 }
 # vim:set ts=2 sw=2 et:
