@@ -53,5 +53,9 @@ package() {
   install -d "${pkgdir}/usr/lib/tmpfiles.d"
   echo 'w /sys/devices/system/cpu/microcode/reload - - - - 1' \
     >"${pkgdir}/usr/lib/tmpfiles.d/${pkgname}.conf"
+  rm -rf "${pkgdir}/lib/firmware/intel/fw_sst*"
+  mv "${srcdir}/fw_sst_0f28_ssp0.bin" "${pkgdir}/lib/firmware/intel/fw_sst_0f28.bin"
+  chown root:root "${pkgdir}/lib/firmware/intel/fw_sst_0f28.bin"
+  chmod 644 "${pkgdir}/lib/firmware/intel/fw_sst_0f28.bin"
 }
 # vim:set ts=2 sw=2 et:
