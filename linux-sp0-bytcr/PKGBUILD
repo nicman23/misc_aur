@@ -1,47 +1,43 @@
-# $Id: PKGBUILD 273031 2016-08-04 15:38:48Z heftig $
-# Maintainer: Jan Alexander Steffens (heftig) <jan.steffens@gmail.com>
-# Contributor: Tobias Powalowski <tpowa@archlinux.org>
-# Contributor: Thomas Baechler <thomas@archlinux.org>
+#
+# Maintainer: Mikael Eriksson <mikael_eriksson@miffe.org>
+#
+# Based on the linux package by:
+# Maintainer: Tobias Powalowski <tpowa@archlinux.org>
+# Maintainer: Thomas Baechler <thomas@archlinux.org>
 
-#pkgbase=linux-zen           # Build -zen kernel
-pkgbase=linux-sp0-bytcr       # Build kernel with a different name
-_srcname=linux-4.6
-_zenpatch=zen-4.6.5-67fab60d3c994def0f3a75d73a5ad938695b9d75.diff
-pkgver=4.6.5
+pkgbase=linux-mainline               # Build stock -ARCH kernel
+#pkgbase=linux-custom       # Build kernel with a different name
+_srcname=linux-4.7
+_patchname=patch-4.8-rc4
+pkgver=4.8rc4
 pkgrel=1
 arch=('i686' 'x86_64')
-url="https://github.com/zen-kernel/zen-kernel"
+url="http://www.kernel.org/"
 license=('GPL2')
-makedepends=('xmlto' 'docbook-xsl' 'kmod' 'inetutils' 'bc' 'libelf')
+makedepends=('xmlto' 'docbook-xsl' 'kmod' 'inetutils' 'bc' 'elfutils')
 options=('!strip')
-source=("https://www.kernel.org/pub/linux/kernel/v4.x/${_srcname}.tar.xz"
-        "https://www.kernel.org/pub/linux/kernel/v4.x/${_srcname}.tar.sign"
-        "https://www.kernel.org/pub/linux/kernel/v4.x/patch-${pkgver}.xz"
-        "https://www.kernel.org/pub/linux/kernel/v4.x/patch-${pkgver}.sign"
-        "http://pkgbuild.com/~heftig/zen-patches/${_zenpatch}.xz"
-        "http://pkgbuild.com/~heftig/zen-patches/${_zenpatch}.sign"
+source=("https://cdn.kernel.org/pub/linux/kernel/v4.x/${_srcname}.tar.xz"
+        "https://cdn.kernel.org/pub/linux/kernel/v4.x/testing/${_patchname}.xz"
+        #"https://www.kernel.org/pub/linux/kernel/v4.x/${_srcname}.tar.sign"
+        #"https://www.kernel.org/pub/linux/kernel/v4.x/testing/${_patchname}.sign"
         # the main kernel config files
         'config' 'config.x86_64'
         # standard config files for mkinitcpio ramdisk
         'linux.preset'
         'change-default-console-loglevel.patch'
-        '0018-rt5640_audio_on_intel_baytrail.patch')
-sha256sums=('a93771cd5a8ad27798f22e9240538dfea48d3a2bf2a6a6ab415de3f02d25d866'
-            'SKIP'
-            '857df33f085a0116b9d2322ffe3b23d5b7d8c4898427d79f68108a653e84910c'
-            'SKIP'
-            'eece6f5aed091972be5e33a4bc9ab1f0f7d345b0ee18cba11fdbb14c1b915d48'
-            'SKIP'
-            '27b5309bf3be704006f34f1d4b427583fc3553a570910ed73ffaa1c8a576876f'
-            '8e6a71ec6ef5b330f2eee17ba400a5dba368043480f641c71f49ef148a59f0d1'
+        'http://home.ix.netcom.com/%7Ejjingber/0013-sound_asoc_for_next_20160825.diff'
+        'http://home.ix.netcom.com/%7Ejjingber/0014-rt5640_audio_on_nextbook_tablets.diff')
+sha256sums=('5190c3d1209aeda04168145bf50569dc0984f80467159b1dc50ad731e3285f10'
+            '56832aae956174d01cf5381947fbb6a0339902285aab2d3ffc804028a4fc5d4a'
+            '2410b713e7e8af5043be85d50a1b1f0b485502c70a0f9485ea034decfe4804c4'
+            '27421193c77444c59f98a94da48a06bc1e739d10a29729fe0185686b7e046c70'
             'f0d90e756f14533ee67afda280500511a62465b4f76adcc5effa95a40045179c'
             '1256b241cd477b265a3c2d64bdc19ffe3c9bbcee82ea3994c590c2c76e767d99'
-            '56cefe74387d1660142ad8c0fee52351dd777eba58eb7b6139da6e423691328e')
-
+            '3e741edb0b320a0ab089783a151ee6604eb71f19eb5f0af7d18b2816caa6d40b'
+            'cc19820c46546e81a9309c24b7022a36df9bd9548d979f19eaa237d344036409')
 validpgpkeys=(
               'ABAF11C65A2970B130ABE3C479BE3E4300411886' # Linus Torvalds
               '647F28654894E3BD457199BE38DBBDC86092693E' # Greg Kroah-Hartman
-              '8218F88849AAC522E94CF470A5E9288C4FA415FA' # Jan Alexander Steffens (heftig)
              )
 
 _kernelname=${pkgbase#linux}
@@ -49,14 +45,15 @@ _kernelname=${pkgbase#linux}
 prepare() {
   cd "${srcdir}/${_srcname}"
 
+  # mainline: not needed
   # add upstream patch
-  patch -p1 -i "${srcdir}/patch-${pkgver}"
+  # patch -p1 -i "${srcdir}/patch-${pkgver}"
+
+  # mainline: add patch
+  patch -p1 -i "${srcdir}/${_patchname}" || true
 
   # add latest fixes from stable queue, if needed
   # http://git.kernel.org/?p=linux/kernel/git/stable/stable-queue.git
-
-  # add zen patch
-  patch -p1 -i "${srcdir}/${_zenpatch}"
 
   # set DEFAULT_CONSOLE_LOGLEVEL to 4 (same value as the 'quiet' kernel param)
   # remove this when a Kconfig knob is made available by upstream
@@ -74,29 +71,31 @@ prepare() {
     sed -i "s|CONFIG_LOCALVERSION_AUTO=.*|CONFIG_LOCALVERSION_AUTO=n|" ./.config
   fi
 
-  # set extraversion to pkgrel
-  sed -ri "s|^(EXTRAVERSION =).*|\1 -${pkgrel}|" Makefile
-
-  # don't run depmod on 'make install'. We'll do this ourselves in packaging
-  sed -i '2iexit 0' scripts/depmod.sh
-
   # sound patches for baytrail
-  patch -p2 -i "${srcdir}/0018-rt5640_audio_on_intel_baytrail.patch"
+  patch -p1 -i "${srcdir}/0013-sound_asoc_for_next_20160825.diff"
+  patch -p1 -i "${srcdir}/0014-rt5640_audio_on_nextbook_tablets.diff"
 
   # custom patch for YOUR platform
   if [ -e "${srcdir}/../custom_entry.patch" ] ; then
     patch -p1 -i "${srcdir}/../custom_entry.patch" ; fi
 
-  # get kernel version
-  make prepare
+  # set extraversion to pkgrel
+  #sed -ri "s|^(EXTRAVERSION =).*|\1 -${pkgrel}|" Makefile
+
+  # don't run depmod on 'make install'. We'll do this ourselves in packaging
+  sed -i '2iexit 0' scripts/depmod.sh
 
   # load configuration
   # Configure the kernel. Replace the line below with one of your choice.
   #make menuconfig # CLI menu for configuration
-  make nconfig # new CLI menu for configuration
+  #make nconfig # new CLI menu for configuration
   #make xconfig # X-based configuration
   #make oldconfig # using old config from previous kernel version
+  make olddefconfig
   # ... or manually edit .config
+
+  # get kernel version
+  make prepare
 
   # rewrite configuration
   yes "" | make config >/dev/null
@@ -164,7 +163,7 @@ _package() {
   mv "${pkgdir}/lib" "${pkgdir}/usr/"
 
   # add vmlinux
-  install -D -m644 vmlinux "${pkgdir}/usr/lib/modules/${_kernver}/build/vmlinux" 
+  install -D -m644 vmlinux "${pkgdir}/usr/lib/modules/${_kernver}/build/vmlinux"
 }
 
 _package-headers() {
@@ -268,7 +267,7 @@ _package-headers() {
   # add objtool for external module building and enabled VALIDATION_STACK option
   if [ -f tools/objtool/objtool ];  then
       mkdir -p "${pkgdir}/usr/lib/modules/${_kernver}/build/tools/objtool"
-      cp -a tools/objtool/objtool ${pkgdir}/usr/lib/modules/${_kernver}/build/tools/objtool/ 
+      cp -a tools/objtool/objtool ${pkgdir}/usr/lib/modules/${_kernver}/build/tools/objtool/
   fi
 
   chown -R root.root "${pkgdir}/usr/lib/modules/${_kernver}/build"
@@ -288,7 +287,7 @@ _package-headers() {
 
   # remove unneeded architectures
   rm -rf "${pkgdir}"/usr/lib/modules/${_kernver}/build/arch/{alpha,arc,arm,arm26,arm64,avr32,blackfin,c6x,cris,frv,h8300,hexagon,ia64,m32r,m68k,m68knommu,metag,mips,microblaze,mn10300,openrisc,parisc,powerpc,ppc,s390,score,sh,sh64,sparc,sparc64,tile,unicore32,um,v850,xtensa}
-  
+
   # remove a files already in linux-docs package
   rm -f "${pkgdir}/usr/lib/modules/${_kernver}/build/Documentation/kbuild/Kconfig.recursion-issue-01"
   rm -f "${pkgdir}/usr/lib/modules/${_kernver}/build/Documentation/kbuild/Kconfig.recursion-issue-02"
