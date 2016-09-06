@@ -1,18 +1,17 @@
---- ./sound/soc/intel/boards/bytcr_rt5640.c	2016-08-11 12:51:20.731894210 +0300
-+++ bytcr_rt5640.c	2016-08-11 12:50:24.963083288 +0300
-@@ -231,6 +231,15 @@
-                 .driver_data = (unsigned long *)(BYT_RT5640_DMIC2_MAP |
-                                                  BYT_RT5640_DMIC_EN),
-         },
+--- ../../bytcr_rt5640.c.old	2016-09-06 23:36:57.063528230 +0300
++++ sound/soc/intel/boards/bytcr_rt5640.c	2016-09-06 23:37:07.533528441 +0300
+@@ -407,6 +407,15 @@
+ 		.driver_data = (unsigned long *)(BYT_RT5640_DMIC2_MAP |
+ 						 BYT_RT5640_DMIC_EN),
+ 	},
 +	{
-+                .callback = byt_rt5640_quirk_cb,
-+                .matches = {
-+                        DMI_EXACT_MATCH(DMI_SYS_VENDOR, "VERO),
-+                        DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "W10i"),
-+                },
-+                .driver_data = (unsigned long *)(BYT_RT5640_DMIC2_MAP |
-+                                                 BYT_RT5640_DMIC_EN),
-+        },
++			.callback = byt_rt5640_quirk_cb,
++			.matches = {
++				DMI_EXACT_MATCH(DMI_SYS_VENDOR, "VERO"),
++				DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "W10i"),
++			},
++			.driver_data = (unsigned long *)(BYT_RT5640_DMIC2_MAP |
++							 BYT_RT5640_DMIC_EN),
++		},
  	{}
  };
- 
