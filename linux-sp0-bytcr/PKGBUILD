@@ -29,17 +29,15 @@ source=("https://cdn.kernel.org/pub/linux/kernel/v4.x/${_srcname}.tar.xz"
         'http://home.ix.netcom.com/%7Ejjingber/0014-rt5640_audio_on_nextbook_tablets.diff')
 sha256sums=('5190c3d1209aeda04168145bf50569dc0984f80467159b1dc50ad731e3285f10'
             '56832aae956174d01cf5381947fbb6a0339902285aab2d3ffc804028a4fc5d4a'
-            '2410b713e7e8af5043be85d50a1b1f0b485502c70a0f9485ea034decfe4804c4'
-            '27421193c77444c59f98a94da48a06bc1e739d10a29729fe0185686b7e046c70'
+            'c99b3ebcae94f42f480d6e2afca6cdcb2703d5d51f3aacb7036cb9f64a182850'
+            '02f60e7ca5cb5a63772090cce1b66d15cc4c9d549815e4ff3287d0cede2308d5'
             'f0d90e756f14533ee67afda280500511a62465b4f76adcc5effa95a40045179c'
             '1256b241cd477b265a3c2d64bdc19ffe3c9bbcee82ea3994c590c2c76e767d99'
             '3e741edb0b320a0ab089783a151ee6604eb71f19eb5f0af7d18b2816caa6d40b'
             'cc19820c46546e81a9309c24b7022a36df9bd9548d979f19eaa237d344036409')
-validpgpkeys=(
-              'ABAF11C65A2970B130ABE3C479BE3E4300411886' # Linus Torvalds
-              '647F28654894E3BD457199BE38DBBDC86092693E' # Greg Kroah-Hartman
+validpgpkeys=('ABAF11C65A2970B130ABE3C479BE3E4300411886' # Linus Torvalds
+              '647F28654894E3BD457199BE38DBBDC86092693E' # Greg Kroah-Hartman             )
              )
-
 _kernelname=${pkgbase#linux}
 
 prepare() {
@@ -77,7 +75,7 @@ prepare() {
 
   # custom patch for YOUR platform
   if [ -e "${srcdir}/../custom_entry.patch" ] ; then
-    patch -p0 -i "${srcdir}/../custom_entry.patch" ; fi
+    patch -R -p2 -i "${srcdir}/../custom_entry.patch" ; fi
 
   # set extraversion to pkgrel
   #sed -ri "s|^(EXTRAVERSION =).*|\1 -${pkgrel}|" Makefile

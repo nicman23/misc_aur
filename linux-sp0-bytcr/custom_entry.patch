@@ -1,17 +1,98 @@
---- ../../bytcr_rt5640.c.old	2016-09-06 23:36:57.063528230 +0300
-+++ sound/soc/intel/boards/bytcr_rt5640.c	2016-09-06 23:37:07.533528441 +0300
-@@ -407,6 +407,15 @@
- 		.driver_data = (unsigned long *)(BYT_RT5640_DMIC2_MAP |
- 						 BYT_RT5640_DMIC_EN),
+--- bytcr_5640.c	2016-09-08 00:49:00.000000000 +0300
++++ src/linux-4.7/sound/soc/intel/boards/bytcr_rt5640.c	2016-09-07 21:03:35.311750508 +0300
+@@ -286,8 +286,8 @@
+ 			/* 2x15 bit slots on SSP2 */
+ 			ret = snd_soc_dai_set_pll(codec_dai, 0,
+ 						RT5640_PLL1_S_BCLK1,
+-						params_rate(params) * 50,
+-						params_rate(params) * 512);
++				  params_rate(params) * 50,
++				  params_rate(params) * 512);
+ 		}
+ 	} else {
+ 		if (byt_rt5640_quirk & BYT_RT5640_MCLK_25MHZ) {
+@@ -392,24 +392,20 @@
+ 	{
+ 		.callback = byt_rt5640_quirk_cb,
+ 		.matches = {
+-			DMI_MATCH(DMI_SYS_VENDOR, "Insyde"),
+-			DMI_MATCH(DMI_PRODUCT_NAME, "ONDA Tablet"),
++			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "YIFANG"),
++			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "NXW9QC132"),
+ 		},
+-		.driver_data = (unsigned long *)(BYT_RT5640_IN1_MAP |
+-						 BYT_RT5640_MCLK_EN |
+-						 BYT_RT5640_SSP0_AIF1),
+-
++		.driver_data = (unsigned long *)(BYT_RT5640_DMIC2_MAP |
++						 BYT_RT5640_DMIC_EN),
  	},
-+	{
-+			.callback = byt_rt5640_quirk_cb,
-+			.matches = {
-+				DMI_EXACT_MATCH(DMI_SYS_VENDOR, "VERO"),
-+				DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "W10i"),
-+			},
-+			.driver_data = (unsigned long *)(BYT_RT5640_DMIC2_MAP |
-+							 BYT_RT5640_DMIC_EN),
-+		},
+ 	{
+ 		.callback = byt_rt5640_quirk_cb,
+ 		.matches = {
+-			DMI_MATCH(DMI_SYS_VENDOR, "VERO"),
+-			DMI_MATCH(DMI_PRODUCT_NAME, "W10i"),
+-		},
+-		.driver_data = (unsigned long *)(BYT_RT5640_IN1_MAP |
+-						 BYT_RT5640_MCLK_EN |
+-						 BYT_RT5640_SSP0_AIF1),
+-
++			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "YIFANG"),
++			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "NXW101QC232"),
++	},
++		.driver_data = (unsigned long *)(BYT_RT5640_DMIC2_MAP |
++						 BYT_RT5640_DMIC_EN),
+ 	},
  	{}
  };
+@@ -586,29 +582,29 @@
+ 
+ 	} else {
+ 
+-		/* set SSP2 to 24-bit */
+-		params_set_format(params, SNDRV_PCM_FORMAT_S24_LE);
++	/* set SSP2 to 24-bit */
++	params_set_format(params, SNDRV_PCM_FORMAT_S24_LE);
+ 
+-		/*
+-		 * Default mode for SSP configuration is TDM 4 slot, override config
+-		 * with explicit setting to I2S 2ch 24-bit. The word length is set with
+-		 * dai_set_tdm_slot() since there is no other API exposed
+-		 */
+-		ret = snd_soc_dai_set_fmt(rtd->cpu_dai,
+-					SND_SOC_DAIFMT_I2S     |
+-					SND_SOC_DAIFMT_NB_IF   |
+-					SND_SOC_DAIFMT_CBS_CFS
+-			);
+-		if (ret < 0) {
+-			dev_err(rtd->dev, "can't set format to I2S, err %d\n", ret);
+-			return ret;
+-		}
++	/*
++	 * Default mode for SSP configuration is TDM 4 slot, override config
++	 * with explicit setting to I2S 2ch 24-bit. The word length is set with
++	 * dai_set_tdm_slot() since there is no other API exposed
++	 */
++	ret = snd_soc_dai_set_fmt(rtd->cpu_dai,
++				  SND_SOC_DAIFMT_I2S     |
++				  SND_SOC_DAIFMT_NB_IF   |
++				  SND_SOC_DAIFMT_CBS_CFS
++				  );
++	if (ret < 0) {
++		dev_err(rtd->dev, "can't set format to I2S, err %d\n", ret);
++		return ret;
++	}
+ 
+-		ret = snd_soc_dai_set_tdm_slot(rtd->cpu_dai, 0x3, 0x3, 2, 24);
+-		if (ret < 0) {
+-			dev_err(rtd->dev, "can't set I2S config, err %d\n", ret);
+-			return ret;
+-		}
++	ret = snd_soc_dai_set_tdm_slot(rtd->cpu_dai, 0x3, 0x3, 2, 24);
++	if (ret < 0) {
++		dev_err(rtd->dev, "can't set I2S config, err %d\n", ret);
++		return ret;
++	}
+ 	}
+ 	return 0;
+ }
