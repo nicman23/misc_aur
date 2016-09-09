@@ -1,19 +1,19 @@
---- src/linux-4.7/sound/soc/intel/boards/bytcr_rt5640.c	2016-09-09 12:25:09.284507854 +0300
-+++ sound/soc/intel/boards/bytcr_rt5640.c	2016-09-09 12:23:25.514504635 +0300
-@@ -401,6 +401,16 @@
+--- src/linux-4.7/sound/soc/intel/boards/bytcr_rt5640.c.old	2016-09-09 16:51:49.918337550 +0300
++++ src/linux-4.7/sound/soc/intel/boards/bytcr_rt5640.c	2016-09-09 16:51:58.918337830 +0300
+@@ -389,6 +389,16 @@
+ 						 BYT_RT5640_SSP0_AIF1),
+ 
+ 	},
++        {
++                .callback = byt_rt5640_quirk_cb,
++                .matches = {
++                        DMI_EXACT_MATCH(DMI_SYS_VENDOR, "VERO"),
++                        DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "W10i"),
++                },
++                .driver_data = (unsigned long *)(BYT_RT5640_DMIC2_MAP |
++                                                 BYT_RT5640_DMIC_EN),
++        },
++
  	{
  		.callback = byt_rt5640_quirk_cb,
  		.matches = {
-+			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "VERO"),
-+			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "W10i"),
-+		},
-+		.driver_data = (unsigned long *)(BYT_RT5640_IN1_MAP |
-+						 BYT_RT5640_MCLK_EN |
-+					 BYT_RT5640_SSP0_AIF1),
-+	},
-+	{
-+		.callback = byt_rt5640_quirk_cb,
-+		.matches = {
- 			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "YIFANG"),
- 			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "NXW101QC232"),
- 	},
