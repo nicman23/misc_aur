@@ -75,7 +75,7 @@ prepare() {
 
   # custom patch for YOUR platform
   if [ -e "${srcdir}/../custom_entry.patch" ] ; then
-    patch -R -p2 -i "${srcdir}/../custom_entry.patch" ; fi
+    patch -p0 -i "${srcdir}/../custom_entry.patch" ; fi
 
   # set extraversion to pkgrel
   #sed -ri "s|^(EXTRAVERSION =).*|\1 -${pkgrel}|" Makefile
