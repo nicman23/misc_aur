@@ -13,14 +13,11 @@ function naming {
 }
 
 function check_installed {
-  pacman -Qi $1 2> /dev/null > /dev/null ; if [ ! $? = 0 ]
-    then pacman -Qsq ^$1\$ 2> /dev/null > /dev/null ; if [ ! $? = 0 ]
-      then pacman -Si $1 2> /dev/null > /dev/null ; if [ ! $? = 0 ]
-        then DEP=( $1 ${DEP[@]/$1} )
+  pacman -Qi $1 &> /dev/null ||
+    pacman -Qsq ^$1\$ &> /dev/null ||
+      pacman -Si $1 &> /dev/null ||
+        DEP=( $1 ${DEP[@]/%$1} )
         return 1
-      fi
-    fi
-  fi
 }
 
 function deps_calc {
@@ -83,7 +80,7 @@ for i in ${PKG[@]} ; do
 
 for i in ${DEP[@]}
  do Build $i
- PKG=( ${PKG[@]/$i} )
+ PKG=( ${PKG[@]/%$i} )
  done
 
 for i in ${PKG[@]} ; do
